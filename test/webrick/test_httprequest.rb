@@ -540,7 +540,7 @@ GET /\r
 
     _end_of_message_
     req = WEBrick::HTTPRequest.new(WEBrick::Config::HTTP)
-    req.parse(StringIO.new(msg.gsub(/^ {6}/, "")))
+    req.parse(StringIO.new(msg.gsub(/^ {6}/, "").gsub("\n", "\r\n")))
     assert_raise(WEBrick::HTTPStatus::BadRequest){
       req.body
     }
