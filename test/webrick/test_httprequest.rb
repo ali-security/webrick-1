@@ -429,4 +429,22 @@ GET /
       req.parse(StringIO.new(""))
     }
   end
+
+  def test_content_length_and_transfer_encoding_headers_smuggling
+    msg = <<-_end_of_message_
+      POST /user HTTP/1.1
+      Content-Length: 28
+      Transfer-Encoding: chunked
+
+      0
+
+      GET /admin HTTP/1.1
+
+    _end_of_message_
+    req = WEBrick::HTTPRequest.new(WEBrick::Config::HTTP)
+    req.parse(StringIO.new(msg.gsub(/^ {6}/, "")))
+    assert_raise(WEBrick::HTTPStatus::BadRequest){
+      req.body
+    }
+  end
 end
